@@ -1,0 +1,59 @@
+---
+title: "exercise_3"
+author: "Gioele Pinana"
+date: '2022-05-06'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Task and Inputs
+
+In this task we are using the method proposed in Laube and Purves (2011) about 
+segmenting trajectories. The task will be to understand this implementation and 
+apply it on Caro, with a different sampling interval.
+
+## libraries 
+
+```{r message=FALSE, warning=FALSE}
+library(readr)
+library(ggplot2)
+library(dplyr)
+```
+
+## Task 1: Segmentation   
+
+Importing the file 
+```{r}
+caro <- read_csv("caro60.csv")
+```
+
+The sampling interval for this dataset is 1 minute. We use a temporal window 
+of 6 minutes. We need to calculate the following Euclidean distances 
+(pos representing single location):
+
+1. pos[n-3] to pos[n]
+2. pos[n-2] to pos[n]
+3. pos[n-1] to pos[n]
+4. pos[n] to pos[n+1]
+5. pos[n] to pos[n+2]
+6. pos[n] to pos[n+3]
+
+```{r}
+caro2 <- caro %>%
+  mutate(
+    nMinus3 = sqrt((lag(E,3)-E)^2+(lag(N,3)-N)^2),   # distance to pos -3 minutes
+    nMinus2 = sqrt((lag(E,2)-E)^2+(lag(N,2)-N)^2),   # distance to pos -2 minutes
+    nMinus1 = sqrt((lag(E,1)-E)^2+(lag(N,1)-N)^2),   # distance to pos -1 minutes
+    nPlus1  = sqrt((E-lead(E,1))^2+(N-lead(N,1))^2), # distance to pos +1 mintues
+    nPlus2  = sqrt((E-lead(E,2))^2+(N-lead(N,2))^2), # distance to pos +2 minutes
+    nPlus3  = sqrt((E-lead(E,3))^2+(N-lead(N,3))^2)  # distance to pos +3 minutes
+  )
+```
+
+
+
+
+
