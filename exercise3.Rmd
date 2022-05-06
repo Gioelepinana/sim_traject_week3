@@ -53,7 +53,31 @@ caro2 <- caro %>%
   )
 ```
 
+## Task 2: Specify and apply threshold d
 
+```{r}
+caro3 <- caro2 %>%
+  rowwise() %>%
+  mutate(
+    stepMean = mean(c(nMinus3, nMinus2, nMinus1,nPlus1,nPlus2, nPlus3))
+  ) %>%
+  ungroup()
+```
+
+In the last code line we calculated the mean distance of n Minus 3, nMinus2, 
+nMinus1, nPlus1, nPlus2 and nPlus3 for each row. Now we can determine if an 
+animal is moving or not by specifying a threshold distance on stepMean. 
+For this task we use the mean value as a threshold: Positions with distances 
+below this value are considered static
+
+```{r}
+caro4 <- caro3 %>% 
+  ungroup() %>%
+  mutate(static = stepMean < mean(stepMean, na.rm = TRUE))
+
+caro_filter <- caro4 %>%
+  filter(!static)
+```
 
 
 
