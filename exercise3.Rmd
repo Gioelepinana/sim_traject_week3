@@ -82,17 +82,54 @@ caro_filter <- caro4 %>%
 ## Task 3: Visualize segmented trajectories
 
 ```{r}
+
+ggplot(caro4, aes(E, N, colour = static)) +
+  geom_path() +
+  geom_point() +
+  coord_equal()
+
 ggplot(caro_filter, aes(E, N)) +
   geom_path() +
   geom_point() +
   coord_equal()
 ```
 
+## Task 4: Segment-based analysis
+
 ```{r}
-ggplot(caro4, aes(E, N, colour = static)) +
+rle_id <- function(vec){
+  x <- rle(vec)$lengths
+  as.factor(rep(seq_along(x), times=x))
+}
+
+caro5 <- caro4 %>%
+  mutate(segment_id = rle_id(static))%>%
+  filter(!static) %>%
+  group_by(segment_id) %>%
+  mutate(duration = n()) %>%
+  filter(duration>6)
+```
+
+
+```{r figures-side, fig.show="hold", out.width="50%"}
+par(mfrow=c(1,2))
+
+ggplot(caro5, aes(E, N, colour = segment_id)) +
   geom_path() +
   geom_point() +
-  coord_equal()
+  coord_equal() +
+  labs(title = "All segments")
+
+ggplot(caro5, aes(E, N, colour = segment_id)) +
+  geom_path() +
+  geom_point() +
+  coord_equal() +
+  labs(title = "Segments longer than 5 minutes")
 ```
+
+## Task 5: Similarity measures
+
+
+
 
 
