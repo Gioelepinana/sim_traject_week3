@@ -21,11 +21,12 @@ apply it on Caro, with a different sampling interval.
 library(readr)
 library(ggplot2)
 library(dplyr)
+library(SimilarityMeasures)
 ```
 
 ## Task 1: Segmentation   
 
-Importing the file 
+Importing dataset 
 ```{r}
 caro <- read_csv("caro60.csv")
 ```
@@ -81,6 +82,7 @@ caro_filter <- caro4 %>%
 
 ## Task 3: Visualize segmented trajectories
 
+Now visualize the segmented trajectory spatially
 ```{r}
 
 ggplot(caro4, aes(E, N, colour = static)) +
@@ -128,6 +130,25 @@ ggplot(caro5, aes(E, N, colour = segment_id)) +
 ```
 
 ## Task 5: Similarity measures
+
+Importing dataset 
+```{r}
+pedestrians <- read_csv("pedestrian.csv")
+```
+
+```{r}
+ggplot(pedestrians, aes(E, N))+
+  facet_wrap(~TrajID) +
+  geom_path() +
+  geom_point(aes(colour=TrajID))
+```
+
+## Task 6: Calculate similarity
+
+
+
+
+
 
 
 
