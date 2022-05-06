@@ -79,5 +79,20 @@ caro_filter <- caro4 %>%
   filter(!static)
 ```
 
+## Task 3: Visualize segmented trajectories
+
+```{r}
+ggplot(caro_filter, aes(E, N)) +
+  geom_path() +
+  geom_point() +
+  coord_equal()
+```
+
+```{r}
+ggplot(caro4, aes(E, N, colour = static)) +
+  geom_path() +
+  geom_point() +
+  coord_equal()
+```
 
 
