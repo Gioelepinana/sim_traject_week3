@@ -22,6 +22,7 @@ library(readr)
 library(ggplot2)
 library(dplyr)
 library(SimilarityMeasures)
+library(tidyr)
 ```
 
 ## Task 1: Segmentation   
@@ -136,20 +137,97 @@ Importing dataset
 pedestrians <- read_csv("pedestrian.csv")
 ```
 
+Visual comparision of the 6 trajectories
 ```{r}
-ggplot(pedestrians, aes(E, N))+
-  facet_wrap(~TrajID) +
+ggplot(pedestrians, aes(N,E, col = as.factor(TrajID)))+
+  geom_point() +
   geom_path() +
-  geom_point(aes(colour=TrajID))
+  facet_wrap(~TrajID)
 ```
 
 ## Task 6: Calculate similarity
 
+First I create the matrices 
+```{r}
+pedestrians1 <- pedestrians %>%
+  filter(TrajID == 1) %>%
+  select(E,N)%>%
+  as.matrix() 
 
+pedestrians2 <- pedestrians %>%
+  filter(TrajID == 2) %>%
+  select(E,N) %>%
+  as.matrix() 
 
+pedestrians3 <- pedestrians %>%
+  filter(TrajID == 3) %>%
+  select(E,N) %>%
+  as.matrix() 
 
+pedestrians4 <- pedestrians %>%
+  filter(TrajID == 4) %>%
+  select(E,N) %>%
+  as.matrix() 
 
+pedestrians5 <- pedestrians %>%
+  filter(TrajID == 5) %>%
+  select(E,N) %>%
+  as.matrix()
 
+pedestrians6 <- pedestrians %>%
+  filter(TrajID == 6) %>%
+  select(E,N) %>%
+  as.matrix()
+
+```
+
+then I compare trajectory 1 to trajectories 2-6 using different similarity 
+measures from the package
+```{r}
+DTW = c(DTW(pedestrians1, pedestrians2), 
+        DTW(pedestrians1, pedestrians3),
+        DTW(pedestrians1, pedestrians4),
+        DTW(pedestrians1, pedestrians5),
+        DTW(pedestrians1, pedestrians6))
+
+EditDist = c(EditDist(pedestrians1, pedestrians2),
+             EditDist(pedestrians1, pedestrians3),
+             EditDist(pedestrians1, pedestrians4),
+             EditDist(pedestrians1, pedestrians5),
+             EditDist(pedestrians1, pedestrians6))
+                         
+Frechet = c(Frechet(pedestrians1, pedestrians2),
+            Frechet(pedestrians1, pedestrians3),
+            Frechet(pedestrians1, pedestrians4),
+            Frechet(pedestrians1, pedestrians5),
+            Frechet(pedestrians1, pedestrians6))
+                         
+LCSS = c(LCSS(pedestrians1, pedestrians2, pointDistance = 20, pointSpacing = 0, errorMarg = 1),
+         LCSS(pedestrians1, pedestrians3, pointDistance = 20, pointSpacing = 0, errorMarg = 1),
+         LCSS(pedestrians1, pedestrians4, pointDistance = 20, pointSpacing = 0, errorMarg = 1),
+         LCSS(pedestrians1, pedestrians5, pointDistance = 20, pointSpacing = 0, errorMarg = 1),
+         LCSS(pedestrians1, pedestrians6, pointDistance = 20, pointSpacing = 0, errorMarg = 1))
+```
+
+The results are then putted together in a new data frame
+```{r}
+similarity_DF <- data.frame(ID = seq(1:5), DTW, EditDist, Frechet, LCSS)
+```
+
+Plotting the Results 
+```{r}
+# Long-Format
+similarity_DF <- similarity_DF %>% 
+  pivot_longer(-ID, names_to = "Method", values_to = "Value")
+
+# Plot results
+ggplot(similarity_DF, aes(as.factor(ID), Value, fill = as.factor(ID))) +
+  geom_bar(stat = "identity") +
+  facet_wrap(~Method, scales = "free_y") +
+  theme(legend.position = "none") +
+  labs(title = "Computed similarities using different measures \n between trajectory 1 and all the others",
+       y = "Value\n", x = "\nComparison trajectory")
+```
 
 
 
