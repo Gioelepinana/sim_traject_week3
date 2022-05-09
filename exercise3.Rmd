@@ -2,7 +2,9 @@
 title: "exercise_3"
 author: "Gioele Pinana"
 date: '2022-05-06'
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -66,10 +68,10 @@ caro3 <- caro2 %>%
   ungroup()
 ```
 
-In the last code line we calculated the mean distance of n Minus 3, nMinus2, 
-nMinus1, nPlus1, nPlus2 and nPlus3 for each row. Now we can determine if an 
+In the last code line I calculated the mean distance of n Minus 3, nMinus2, 
+nMinus1, nPlus1, nPlus2 and nPlus3 for each row. Now I can determine if an 
 animal is moving or not by specifying a threshold distance on stepMean. 
-For this task we use the mean value as a threshold: Positions with distances 
+For this task I use the mean value as a threshold: Positions with distances 
 below this value are considered static
 
 ```{r}
@@ -83,7 +85,7 @@ caro_filter <- caro4 %>%
 
 ## Task 3: Visualize segmented trajectories
 
-Now visualize the segmented trajectory spatially
+Now I visualize the segmented trajectory spatially
 ```{r}
 
 ggplot(caro4, aes(E, N, colour = static)) +
@@ -181,8 +183,8 @@ pedestrians6 <- pedestrians %>%
 
 ```
 
-then I compare trajectory 1 to trajectories 2-6 using different similarity 
-measures from the package
+Now I compare trajectory 1 to trajectories 2-6 using different similarity 
+measures from the package SimilarityMeasures
 ```{r}
 DTW = c(DTW(pedestrians1, pedestrians2), 
         DTW(pedestrians1, pedestrians3),
@@ -202,31 +204,36 @@ Frechet = c(Frechet(pedestrians1, pedestrians2),
             Frechet(pedestrians1, pedestrians5),
             Frechet(pedestrians1, pedestrians6))
                          
-LCSS = c(LCSS(pedestrians1, pedestrians2, pointDistance = 20, pointSpacing = 0, errorMarg = 1),
-         LCSS(pedestrians1, pedestrians3, pointDistance = 20, pointSpacing = 0, errorMarg = 1),
-         LCSS(pedestrians1, pedestrians4, pointDistance = 20, pointSpacing = 0, errorMarg = 1),
-         LCSS(pedestrians1, pedestrians5, pointDistance = 20, pointSpacing = 0, errorMarg = 1),
-         LCSS(pedestrians1, pedestrians6, pointDistance = 20, pointSpacing = 0, errorMarg = 1))
+LCSS = c(LCSS(pedestrians1, pedestrians2, pointDistance = 10, pointSpacing = 0, 
+              errorMarg = 1),
+         LCSS(pedestrians1, pedestrians3, pointDistance = 10, pointSpacing = 0, 
+              errorMarg = 1),
+         LCSS(pedestrians1, pedestrians4, pointDistance = 10, pointSpacing = 0, 
+              errorMarg = 1),
+         LCSS(pedestrians1, pedestrians5, pointDistance = 10, pointSpacing = 0, 
+              errorMarg = 1),
+         LCSS(pedestrians1, pedestrians6, pointDistance = 10, pointSpacing = 0, 
+              errorMarg = 1))
 ```
 
-The results are then putted together in a new data frame
+Now I create a new data frame containing the results 
 ```{r}
 similarity_DF <- data.frame(ID = seq(1:5), DTW, EditDist, Frechet, LCSS)
 ```
 
-Plotting the Results 
+Plotting the Results, I first transform the data frame from wide to long 
+format and then I plot the results
 ```{r}
-# Long-Format
 similarity_DF <- similarity_DF %>% 
-  pivot_longer(-ID, names_to = "Method", values_to = "Value")
+  pivot_longer(-ID, names_to = "Measures", values_to = "Value")
 
-# Plot results
 ggplot(similarity_DF, aes(as.factor(ID), Value, fill = as.factor(ID))) +
   geom_bar(stat = "identity") +
-  facet_wrap(~Method, scales = "free_y") +
+  facet_wrap(~Measures, scales = "free_y") +
   theme(legend.position = "none") +
-  labs(title = "Computed similarities using different measures \n between trajectory 1 and all the others",
-       y = "Value\n", x = "\nComparison trajectory")
+  labs(title = "Computed similarities using different measures between 
+       trajectory 1 and all the others",
+       y = "Value", x = "Comparison trajectory")
 ```
 
 
